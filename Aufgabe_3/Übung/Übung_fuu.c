@@ -6,7 +6,7 @@
 int ggt_teiler(rational *rat_zahl);
 
 int a(int);
-int b(int);
+
 
 rational *creat(char vz, unsigned int za, unsigned int ne){
     rational *zahl =malloc(sizeof(rational));
