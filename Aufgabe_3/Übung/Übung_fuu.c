@@ -5,6 +5,7 @@
 
 int ggt_teiler(rational *rat_zahl);
 
+int a(int);
 
 
 rational *creat(char vz, unsigned int za, unsigned int ne){
