@@ -5,8 +5,6 @@
 
 int ggt_teiler(rational *rat_zahl);
 
-int a(int);
-
 
 rational *creat(char vz, unsigned int za, unsigned int ne){
     rational *zahl =malloc(sizeof(rational));
@@ -44,12 +42,42 @@ int divison_rat(const rational *dividend, const rational *divisor, rational *quo
 
     ggt_teiler(quotient);
 
-    return 0;
+return 0;
 }
 
 
 
+int addition_rat(const rational *summand_1, const rational *summand_2, rational *summe){
 
+   
+
+        summe->za = (summand_1->za*summand_2->ne) + (summand_2->za*summand_1->ne);
+        summe->ne = (summand_1->ne * summand_2->ne);
+
+        if(summand_1->vz == summand_2->vz){
+            summe->vz = summand_1->vz;
+        }
+        else{
+            if((double)summand_1->za / (double)summand_1->ne > (double)summand_2->za / (double)summand_2->ne){
+                summe->vz = summand_1->vz;
+            }
+            else if((double)summand_1->za / (double)summand_1->ne < (double)summand_2->za / (double)summand_2->ne){
+                summe->vz = summand_2->vz;
+            }
+        }
+
+
+return 0;
+}
+
+
+
+int subtrahtion_rat(const rational *subtrahend, const rational *minuend, rational *differenz){
+
+
+    
+return 0;
+}
 
 
 

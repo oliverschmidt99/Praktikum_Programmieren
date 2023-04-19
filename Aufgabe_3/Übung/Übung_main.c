@@ -20,9 +20,13 @@ printf("%i %u %u\n", z1->vz, z1->za, z1->ne);
 printf("%i %u %u\n", z2->vz, z2->za, z2->ne);
 
 multiplikation_rat(z1, z2, erg);
+printf("multiplikation = %i %u / %u\n", erg->vz, erg->za, erg->ne);
 
-printf("%i %u %u\n", erg->vz, erg->za, erg->ne);
+division_rat(z1, z2, erg);
+printf("division = %i %u / %u\n", erg->vz, erg->za, erg->ne);
 
+addition_rat(z1, z2, erg);
+printf("addition = %i %u / %u\n", erg->vz, erg->za, erg->ne);
 
 
 
