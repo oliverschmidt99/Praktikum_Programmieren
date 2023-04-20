@@ -9,8 +9,6 @@
 
 
 
-
-
 int main(){
 rational *z1 = creat(1,3,6);
 rational *z2 = creat(-1,12,5);
