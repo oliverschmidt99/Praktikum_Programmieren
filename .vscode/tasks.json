@@ -11,6 +11,13 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"type": "cmake",
+			"label": "CMake: test",
+			"command": "test",
+			"problemMatcher": [],
+			"detail": "CMake template test task"
 		}
 	]
 }

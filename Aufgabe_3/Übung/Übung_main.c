@@ -27,7 +27,6 @@ addition_rat(z1, z2, erg);
 printf("addition = %i %u / %u\n", erg->vz, erg->za, erg->ne);
 
 
-
     destroy(z1);
     destroy(z2);
     destroy(erg);
