@@ -13,7 +13,6 @@ rational *creat(char vz, unsigned int za, unsigned int ne){
         zahl->za = za;
         zahl->ne = ne;
     }
-
     return zahl;
 }
 
@@ -29,7 +28,6 @@ int multiplikation_rat(const rational *faktor_1, const rational *faktor_2, ratio
     produkt->vz = faktor_1->vz * faktor_2->vz;
 
     ggt_teiler(produkt);
-
 return 0;
 }
 
@@ -51,7 +49,7 @@ int addition_rat(const rational *summand_1, const rational *summand_2, rational 
 
    
 
-        summe->za = (summand_1->za*summand_2->ne) + (summand_2->za*summand_1->ne);
+        summe->za = (summand_1->za * summand_2->ne) + (summand_2->za * summand_1->ne);
         summe->ne = (summand_1->ne * summand_2->ne);
 
         if(summand_1->vz == summand_2->vz){
@@ -65,14 +63,13 @@ int addition_rat(const rational *summand_1, const rational *summand_2, rational 
                 summe->vz = summand_2->vz;
             }
         }
-
-
 return 0;
 }
 
 
 
 int subtrahtion_rat(const rational *subtrahend, const rational *minuend, rational *differenz){
+
 
 
     
