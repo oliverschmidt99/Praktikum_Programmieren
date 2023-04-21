@@ -15,6 +15,9 @@ rational *z1 = creat(-1,8775,6343);
 rational *z2 = creat(1,43453,8434);
 rational *erg = creat(0,0,0);
 
+
+
+if(z1->ne != 0 && z2->ne != 0){
 ggt_teiler(z1);
 ggt_teiler(z2);
 
@@ -32,6 +35,11 @@ ggt_teiler(z2);
 
     subtrahtion_rat(z1, z2, erg);
     printf("subtrahtion\t = ->%i %10u/%-10u<-\n", erg->vz, erg->za, erg->ne);
+}
+else{
+printf("\nNenner darf nicht Null sein!\n");    
+}
+
 
 destroy(z1);
 destroy(z2);
