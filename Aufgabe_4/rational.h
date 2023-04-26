@@ -8,12 +8,6 @@ typedef struct{
     unsigned int ne;
 }rational;
 
-typedef struct {
-    int v;    // Vorzeichen: 1 für positive Zahlen, -1 für negative Zahlen
-    unsigned int z;    // Zähler
-    unsigned int n;    // Nenner
-} rational_t;
-
 rational *creat(char vz, unsigned int ne, unsigned int za);
 void destroy(rational *zahl);
 

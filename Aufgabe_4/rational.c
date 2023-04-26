@@ -198,7 +198,10 @@ int from_json(const uint8_t* buffer, const size_t length, rational_t* result) {
 
 void ausgabe_rat(const rational *zahl, char type, unsigned int zaehler){
 
-//printf("\nZahl = %u\n");
+if(zahl->vz == 1){
+
+    
+}
 
 
 }
