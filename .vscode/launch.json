@@ -3,15 +3,89 @@
     // Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
     // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [
         {
+            "configurations": [
+              {
+                "name": "ESP-IDF",
+                "cStandard": "c11",
+                "cppStandard": "c++17",
+                "includePath": [
+                  "${config:idf.espIdfPath}/components/**",
+                  "${config:idf.espIdfPathWin}/components/**",
+                  "${workspaceFolder}/**"
+                ],
+                "browse": {
+                  "path": [
+                    "${config:idf.espIdfPath}/components",
+                    "${config:idf.espIdfPathWin}/components",
+                    "${workspaceFolder}"
+                  ],
+                  "limitSymbolsToIncludedHeaders": false
+                },
+                "compilerPath": "/path/to/toolchain-gcc"
+              }
+            ],
+            "version": 4
+          },
+          
+          
+
+          {
+            "configurations": [
+              {
+                "name": "ESP-IDF",
+                "cStandard": "c11",
+                "cppStandard": "c++17",
+                "includePath": [
+                  "${config:idf.espIdfPath}/components/**",
+                  "${config:idf.espIdfPathWin}/components/**",
+                  "${workspaceFolder}/**"
+                ],
+                "browse": {
+                  "path": [
+                    "${config:idf.espIdfPath}/components",
+                    "${config:idf.espIdfPathWin}/components",
+                    "${workspaceFolder}"
+                  ],
+                  "limitSymbolsToIncludedHeaders": false
+                },
+                "compilerPath": "/path/to/toolchain-gcc"
+              }
+            ],
+            "version": 4
+          }
+          
+          
+          
+          
+          {
+            "configurations": [
+              {
+                "name": "ESP-IDF",
+                "cStandard": "c11",
+                "cppStandard": "c++17",
+                "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+              }
+            ],
+            "version": 4
+          }
 
 
 
-            
-        },
+          
+          
+          {
+            "configurations": [
+              {
+                "name": "ESP-IDF",
+                "cStandard": "c11",
+                "cppStandard": "c++17",
+                "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+              }
+            ],
+            "version": 4
+          },
 
-    
     {
         "type": "lldb",
         "request": "launch",
