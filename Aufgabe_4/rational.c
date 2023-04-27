@@ -104,10 +104,6 @@ return 0;
 
 
 
-
-
-
-
 int ggt_teiler(rational *rat_zahl){
 
     unsigned int teiler = 0;
