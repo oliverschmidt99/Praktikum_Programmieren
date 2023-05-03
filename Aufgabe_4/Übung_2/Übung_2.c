@@ -38,21 +38,22 @@ int from_json(const uint8_t* buffer){
     printf("buffer: %s\n", buffer);
     char* ptr;
 
-
+    
     ptr = strstr(buffer, "{");
     if(!ptr){
-        printf("Hi\n");
+        printf("Falsch: { nicht vohrhanden\n");
         return 1;
     }
-            printf("Hiiiiiiiiiiiiiiiiiiiii\n");
+    printf("Richtig: { vohrhanden\n");
+
+
     ptr = strstr(&ptr[1], "}");
-
-
     if(!ptr){
-        printf("Hiii\n");
+        printf("Falsch: } nicht vohrhanden\n");
         return 1;
     }
-            printf("HIIIIIIIIIIIIIIIII\n");
+    printf("Richtig: } vohrhanden\n");
+    
 
 return 0;
 }
