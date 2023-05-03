@@ -1,58 +1,65 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 
+
+typedef struct{
+    char vz;
+    unsigned int za;
+    unsigned int ne;
+}rational;
+
+
+int from_json(const uint8_t* buffer);
 
 
 
 int main(){
 printf("\n\n");
 
-uint8_t buffer[] =  "{ \"v\": 1, \"z\": 13, \"n\": 7 }";
-                    //"{ \"z\": 14, \"n\": 13, \"v\": -1 }"
-                    //"{ \"v\": 0, \"z\": -8 }"
-                    //"{ \"n\": 13, \"v\": 1, \"z\": 98 }";
+int länge = 0;
+rational result;
 
 
-    int value = 0;
-    int count = 0;
-    for (int i = 0; i < sizeof(buffer); i++) {
-        if (buffer[i] >= '0' && buffer[i] <= '9') {
-        
-        }
-        
-    }
+uint8_t buffer[] =  "{ \"v\" : 1, \"z\": 13, \"n\": 7 }";
 
-
-
-
-printf("buffer: %s\n", buffer);
-
-
+from_json((uint8_t*)buffer);
 
 
 printf("\n\n");
 }
 
 
-/*
+
+int from_json(const uint8_t* buffer){
+
+    rational json;
+    printf("buffer: %s\n", buffer);
+    char* ptr;
 
 
-int from_json(const uint8_t* buffer, const size_t length, rational_t* result){
+    ptr = strstr(buffer, "{");
+    if(!ptr){
+        printf("Hi\n");
+        return 1;
+    }
+            printf("Hiiiiiiiiiiiiiiiiiiiii\n");
+    ptr = strstr(&ptr[1], "}");
 
-    uint8_t *buffer[] ={
-        { "v": 1, "z": 13, "n": 7 }
-        { "z": 2, "n": 3, "v": -1 }
-        { "v": 1 , "n" : 1, "z": 0 }
-        {"z": 17, "v": -1,"n":1}
-    };
 
-
-memcpy()
+    if(!ptr){
+        printf("Hiii\n");
+        return 1;
+    }
+            printf("HIIIIIIIIIIIIIIIII\n");
 
 return 0;
 }
 
+
+
+/*
 
 
 int to_json(const rational_t *r, uint8_t *json, size_t json_size){
