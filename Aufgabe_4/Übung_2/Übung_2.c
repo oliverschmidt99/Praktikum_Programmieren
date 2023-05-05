@@ -14,7 +14,7 @@ typedef struct{
 }rational;
 
 
-int from_json(const uint8_t* buffer);
+int from_json(const uint8_t *buffer);
 int findstring(char *sucher_string, char **pointer_adressen);
 
 
@@ -34,12 +34,16 @@ printf("\n\n");
 //rational result;
 
 
-uint8_t buffer[] =  "{\"vz\": 23,\"za\": 33, \"ne\": 7}";
+uint8_t buffer[] =  "{\"vz\":                    1, \"za\": 33, \"ne\": 7}";
 
-from_json((uint8_t*)buffer);
-
+int a = from_json((uint8_t*)buffer);
+if(a == 0){
+printf("Die Eingabe ist Tip Top!\n");
+}
+printf("Fehler!\n");
 
 printf("\n\n");
+return 0;
 }
 
 
@@ -52,141 +56,136 @@ printf("\n\n");
 
 
 
-int from_json(const uint8_t* buffer){
+int from_json(const uint8_t *buffer){
 
- //   rational json;
-    printf("buffer: %s\n\n", buffer);
+
+printf("buffer\t\t: %s\n", (char*)buffer);
+ 
+    //rational json; 
     char* ptr;
-    char* kopie_string_1;
-    char* kopie_string_vz;
-    char* kopie_string_ne;
-    char* kopie_string_za;
+    char* kopie_string_buffer;
+    char vz_vg[] = "\"vz\":";
+    char za_vg[] = "\"za\":";
+    char ne_vg[] = "\"ne\":";
     char* start_adr_vz;
     char* start_adr_za;
     char* start_adr_ne;
-    char* end_adr_vz;
-    char* end_adr_za;
-    char* end_adr_ne;
-    
-    int länge_string_1;
+    //char* end_adr_vz;
+    //char* end_adr_za;
+    //char* end_adr_ne;
+    char *token;
+    int länge_string_buffer;
     int zähler = 0;
-    char such_string_nummer[] = "-1234567890";
+    //char such_string_nummer[] = "-1234567890";
 
-    länge_string_1 = strlen(buffer+1);
-    kopie_string_1 = malloc(länge_string_1);
-    kopie_string_vz = malloc(länge_string_1);
-    kopie_string_za = malloc(länge_string_1);
-    kopie_string_ne = malloc(länge_string_1);
-    strcpy((char*)kopie_string_1, buffer);
+    länge_string_buffer = strlen((char*)buffer)+1; 
+    kopie_string_buffer = malloc(länge_string_buffer);
+    //strcpy((char*)kopie_string_buffer, buffer);
 
-    
-    ptr = strstr(buffer, "{");
-    if(ptr != &buffer[0]){
+
+    //Leerzeichen sind erlaubt, somit werden siie entfernt, damit die berechnung einfacher ist. 
+    token = strtok(buffer, " "); // Trennzeichen ist hier ein Leerzeichen
+
+    while (token != NULL) {
+        strcat(kopie_string_buffer, token); // fügt jedes Token an den neuen String an
+        token = strtok(NULL, " ");
+    }
+    länge_string_buffer = strlen(kopie_string_buffer+1);
+    printf("buffer Kopie\t: %s\n\n", kopie_string_buffer);
+
+
+
+ 
+
+    ptr = strstr(kopie_string_buffer, "{");
+    if(ptr != &kopie_string_buffer[0]){
         printf(RED"Falsch :"RESET"\t { nicht vorhanden oder nicht am Anfang der Zeichenkette.\n"RESET);
         return -1;
     }
-    else{
-        zähler = 0;
-        zähler = findstring("{", &buffer);
-        if(zähler > 1){
-        printf(RED"Falsch :"RESET"\t { %d mal vorhanden\n"RESET, zähler);
-        return -1;
-        }
-        printf(GREEN"Richtig:"RESET" { vorhanden\n"RESET);
-        
-        
-        
-        ptr = strstr(&ptr[länge_string_1], "}");
-            if(!ptr){
-                printf(RED"Falsch :"RESET"\t } nicht vorhanden oder nicht am Anfang der Zeichenkette.\n"RESET);
-                return -1;
-            }
-        printf(GREEN"Richtig:"RESET" } vorhanden\n"RESET);
-        }
 
 
+    zähler = 0;
+    zähler = findstring("{", &kopie_string_buffer);
+    if(zähler > 1){
+        printf(RED"Falsch :"RESET" { %d mal vorhanden\n"RESET, zähler);
+    return -1;
+    }
+    
+    ptr = strstr(&ptr[länge_string_buffer], "}");
+    if(ptr != &kopie_string_buffer[länge_string_buffer]){
+            printf(RED"Falsch :"RESET" } nicht vorhanden oder nicht am Anfang der Zeichenkette.\n"RESET);
+    return -1;
+    }
+   
 
-
-    ptr = strstr(buffer, ",");
+    ptr = strstr(kopie_string_buffer, ",");
     if(!ptr){
         printf(RED"Falsch :"RESET" , nicht vorhanden oder nicht am Anfang der Zeichenkette.\n"RESET);
-        return -1;
+    return -1;
     }
-    else{
-        zähler = 0;
-        zähler = findstring(",", &buffer);
-        if(zähler > 2){
+    
+    zähler = 0;
+    zähler = findstring(",", &kopie_string_buffer);
+    if(zähler > 2){
         printf(RED"Falsch :"RESET" , %d mal zu viel vorhanden\n"RESET, zähler-2);
-        return -1;
-        }
-        printf(GREEN"Richtig:"RESET" , %d mal vorhanden\n"RESET, zähler);
+    return -1;
     }
+    
+
 
 
 /*
 In dem String wird geprüft, ob die Zeichenbausteine, wie "vz": vorhanden sind.
 */
 
-    start_adr_vz = strstr(buffer, "\"vz\":");
-    if(!start_adr_vz){
+    start_adr_vz = strstr(kopie_string_buffer, vz_vg);
+    start_adr_za = strstr(kopie_string_buffer, za_vg);
+    start_adr_ne = strstr(kopie_string_buffer, ne_vg);
+
+
+
+    if(start_adr_vz == NULL){
         printf(RED"Falsch :"RESET" \"vz\": nicht vorhanden\n"RESET);
-        return -1;
-    }
-    else{
-        printf(GREEN"Richtig:"RESET" \"vz\": vorhanden\n"RESET);
+       // return -1;
     }
 
-
-    start_adr_za = strstr(buffer, "\"za\":");
-    if(!start_adr_za){
+    if(start_adr_za == NULL){
         printf(RED"Falsch :"RESET" \"za\": nicht vorhanden\n"RESET);
-        return -1;
-    }else{
-    zähler = 0;
-        zähler = findstring("\"za\":", &buffer);
-        if(zähler > 1){
-        printf(RED"Falsch :"RESET"\t \"za\": %d mal vorhanden\n"RESET, zähler);
-        return -1;
-        }
-        printf(GREEN"Richtig:"RESET" \"za\": vorhanden\n"RESET);
+       // return -1;
     }
-
-
-    start_adr_ne = strstr(buffer, "\"ne\":");
-    if(!ptr){
+    
+    if(start_adr_ne == NULL){
         printf(RED"Falsch :"RESET" \"ne\": nicht vorhanden\n"RESET);
-        return -1;
-    }else{
-    zähler = 0;
-        zähler = findstring("\"ne\":", &buffer);
-        if(zähler > 1){
-        printf(RED"Falsch :"RESET"\t \"ne\": %d mal vorhanden\n"RESET, zähler);
-        return -1;
-        }
-        printf(GREEN"Richtig:"RESET" \"ne\": vorhanden\n"RESET);
+        //return -1;
     }
-
-
 
     
+    zähler = 0;
+    zähler = findstring(vz_vg, (char**)start_adr_vz);
+    printf("Hallo nach Findstring ende\n");
+    if(zähler >= 1){
+    printf(RED"Falsch :"RESET"\t \"vz\": %d mal vorhanden\n"RESET, zähler);
+    return -1;
+    }
 
+    zähler = 0;
+    zähler = findstring(za_vg, (char**)start_adr_ne);
+    printf("Hallo nach Findstring ende\n");
+    if(zähler >= 1){
+    printf(RED"Falsch :"RESET"\t \"za\": %d mal vorhanden\n"RESET, zähler);
+    return -1;
+    }
+    
+    zähler = 0;
+    zähler = findstring(ne_vg, (char**)kopie_string_buffer);
+    if(zähler >= 1){
+    printf(RED"Falsch :"RESET"\t \"ne\": %d mal vorhanden\n"RESET, zähler);
+    return -1;
+    }
+    
 
-
-
-
-
-
-
-
-
-
-
-
-
-free(kopie_string_vz);
-free(kopie_string_za);
-free(kopie_string_ne);
-free(kopie_string_1);
+printf("Die Eingabe ist Tip Top!\n");
+free(kopie_string_buffer);
 return 0;
 }
 
@@ -213,7 +212,7 @@ int zähler = 0;
 char *fundort_adresse = strstr(*pointer_adresse, sucher_string);
 *pointer_adresse = fundort_adresse;
 
-
+printf("Hallo findstring\n");
     while(fundort_adresse){
         zähler ++;
         fundort_adresse += strlen(sucher_string);
