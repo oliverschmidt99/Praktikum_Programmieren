@@ -37,13 +37,13 @@ printf("\n\n");
 rational *result = creat(0,0,0);
 
 
-uint8_t buffer[] =  "{ \"za\": 4294967295 \"ne\": 4294967295, \"vz\": 1 }";
+uint8_t buffer[] =  "{ \"za\": 4294           967295 ,\"ne\": 4294967295, \"vz\": 1 }";
 
 int a = from_json((uint8_t*)buffer, result);
 
 
 if(a != 0){
-printf(RED"Fehler!\n\n"RESET);
+printf(RED"Es ist ein Eingabefehler aufgetreten. Bitte überprüfen Sie Ihre Angaben!\n\n"RESET);
 return -1;
 }
 
@@ -117,35 +117,30 @@ Zählt die Anzahl der Vorkommen des Zeichens ',' im String und gibt eine Fehlerm
 
     ptr = strstr(kopie_string_buffer, "{");
     if(ptr != &kopie_string_buffer[0]){
-        printf(RED"Falsch :"RESET"\t { nicht vorhanden oder nicht am Anfang der Zeichenkette.\n"RESET);
         return -1;
     }
 
     zähler = 0;
     zähler = findstring("{", kopie_string_buffer);
     if(zähler > 1){
-        printf(RED"Falsch :"RESET" { %d mal vorhanden\n"RESET, zähler);
     return -1;
     }
     
 
     ptr = strstr(&kopie_string_buffer[länge_string_short]-1, "}");
     if(!ptr){
-            printf(RED"Falsch :"RESET" } nicht vorhanden oder nicht am Anfang der Zeichenkette.\n"RESET);
     return -1;
     }
    
 
     ptr = strstr(&kopie_string_buffer[0], ",");
     if(!ptr){
-        printf(RED"Falsch :"RESET" , nicht vorhanden oder nicht am Anfang der Zeichenkette.\n"RESET);
     return -1;
     }
     
     zähler = 0;
     zähler = findstring(",", ptr);
-    if(zähler >= 2){
-        printf(RED"Falsch :"RESET" , %d mal zu viel vorhanden\n"RESET, zähler-2);
+    if(zähler != 2){
     return -1;
     }
     
