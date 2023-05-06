@@ -5,9 +5,9 @@
 #include <ctype.h>
 
 
-#define RED   "\x1B[31m"
-#define GREEN "\x1B[32m"
-#define RESET "\x1B[0m"
+#define RD   "\x1B[31m"
+#define GN "\x1B[32m"
+#define RS "\x1B[0m"
 
 typedef struct{
     char vz;
@@ -18,8 +18,55 @@ typedef struct{
 rational *creat(char vz, unsigned int ne, unsigned int za);
 void destroy(rational *zahl);
 
-int from_json(const uint8_t *buffer, rational *from_json);
-int findstring(char *sucher_string, char *pointer_adressen);
+//Neue Prototypen
+
+
+/**
+ * @brief Zerlegt einen String in Tokens anhand eines Trennzeichens und fügt sie zu einem neuen String zusammen.
+ *
+ * @param buffer Der zu zerlegende String.
+ * @param kopie_buffer_string Der neue String, zu dem die Tokens hinzugefügt werden.
+ * @param trennzeichen Das Trennzeichen, das die Tokens im ursprünglichen String voneinander trennt.
+ * @return Die Länge des neuen Strings als unsigned short.
+ */
+short zerlege_string(char *buffer, char *kopie_buffer_string, const char *trennzeichen);
+/**
+ * @brief Extrahiert eine rationale Zahl aus einem JSON-String und gibt sie als short zurück.
+ *
+ * Diese Funktion sucht im JSON-String nach der rationalen Zahl, die mit dem Schlüssel "rational" versehen ist.
+ * Die Zahl wird dann extrahiert und als short zurückgegeben. Wenn der JSON-String ungültig ist oder der Schlüssel nicht gefunden wurde,
+ * wird 0 zurückgegeben.
+ *
+ * @param buffer Der JSON-String, der analysiert werden soll.
+ * @param rational Ein Zeiger auf eine rational-Struktur, in der die extrahierte Zahl gespeichert wird.
+ * @return Die extrahierte rationale Zahl als Short oder 0, wenn der JSON-String ungültig ist oder der Schlüssel nicht gefunden wurde.
+ */
+short von_json(const uint8_t *buffer, rational *von_json);
+
+short to_json(const rational *r, uint8_t *json, size_t json_size);
+/**
+ * @brief Zählt das Vorkommen eines Zeichens in einem String und gibt die Anzahl zurück.
+ *
+ * Diese Funktion sucht nach dem Vorkommen des angegebenen Zeichens im angegebenen String und gibt die Anzahl der Vorkommen zurück.
+ *
+ * @param sucher_string Der zu durchsuchende String.
+ * @param pointer_adressen Ein Zeiger auf den ersten Charakter, der nach dem Suchvorgang gefunden wurde. Kann auf NULL gesetzt werden, wenn Sie die Adressen nicht benötigen.
+ * @return Die Anzahl der Vorkommen des Zeichens im String.
+ */
+short zähle_string(char *sucher_string, char *pointer_adressen);
+/**
+@brief Extrahiert eine Zahl aus einem String und speichert sie in einer Datenstruktur.
+Diese Funktion sucht nach einem bestimmten Muster in einem String und extrahiert daraus
+eine Zahl, die in eine bestimmte Datenstruktur gespeichert wird. Sie wird verwendet,
+um Zahlen aus einem JSON-String zu extrahieren.
+@param kopie_buffer_string Ein Pointer auf einen Puffer, in dem der zu durchsuchende String kopiert wird.
+@param start_adr_vz Ein Pointer auf den Start des Musters im zu durchsuchenden String.
+@param von_json Ein Pointer auf die Datenstruktur, in der die extrahierte Zahl gespeichert wird.
+@param vz_vgl Ein Pointer auf das Muster, nach dem gesucht wird.
+@return Gibt 0 zurück, wenn die Zahl erfolgreich extrahiert und gespeichert wurde, oder -1 im Fehlerfall.
+*/
+short extrahiere_zahl_aus_string(char* start_adr, rational *von_json, const char* vgl);
+
 
 
 //-------------------------------------------------------------------------------------------------------//-------------------------------------------------------------------------------------------------------
@@ -34,27 +81,27 @@ int findstring(char *sucher_string, char *pointer_adressen);
 int main(){
 printf("\n\n");
 
-rational *result = creat(0,0,0);
+rational *rückgabe_von_json = creat(0,0,0);
 
 
-uint8_t buffer[] =  "{ \"za\": 4294           967295 ,\"ne\": 4294967295, \"vz\": 1 }";
+uint8_t buffer[] =  "{ \"za\": 4294967295 ,\"ne\": 4294967295, \"vz\": -1 }";
 
-int a = from_json((uint8_t*)buffer, result);
+int a = von_json((uint8_t*)buffer, rückgabe_von_json);
 
 
 if(a != 0){
-printf(RED"Es ist ein Eingabefehler aufgetreten. Bitte überprüfen Sie Ihre Angaben!\n\n"RESET);
+printf(RD"Es ist ein Eingabefehler aufgetreten. Bitte überprüfen Sie Ihre Angaben!\n\n"RS);
 return -1;
 }
 
 
-printf(GREEN"Die Eingabe ist Tip Top!\n"RESET);
+printf(GN"Die Eingabe ist Tip Top!\n"RS);
 
-printf("vz=%i\n", result->vz);
-printf("za=%u\n", result->za);
-printf("ne=%u\n", result->ne);
+printf("vz=%i\n", rückgabe_von_json->vz);
+printf("za=%u\n", rückgabe_von_json->za);
+printf("ne=%u\n", rückgabe_von_json->ne);
 
-destroy(result);
+destroy(rückgabe_von_json);
 printf("\n\n");
 return 0;
 }
@@ -69,197 +116,134 @@ return 0;
 
 
 
-int from_json(const uint8_t *buffer, rational *from_json){
+short von_json(const uint8_t *buffer, rational *von_json){
 
 printf("buffer\t\t: %s\n", (char*)buffer);
  
     char* ptr;
-    char* token;
     char* start_adr_vz;
     char* start_adr_za;
     char* start_adr_ne;
-    char* end_adr_vz;
-    char* end_adr_za;
-    char* end_adr_ne;
-    char* kopie_string_buffer;
-    //char* kopie_string_short;
-
+    char* kopie_buffer_string;
+    char* kopie_kleiner_string;
     char vz_vgl[] = "\"vz\":";
     char za_vgl[] = "\"za\":";
     char ne_vgl[] = "\"ne\":";
 
     int länge_string_buffer;
     int länge_string_short;
-    int zähler = 0;
-    //char such_string_nummer[] = "-1234567890";
+    short zähler = 0;
+    short ist_error = 0;
 
     länge_string_buffer = strlen((char*)buffer)+1; 
-    kopie_string_buffer = malloc(länge_string_buffer);
-    //strcpy((char*)kopie_string_buffer, buffer);
+    kopie_buffer_string = malloc(länge_string_buffer);
+    kopie_kleiner_string = malloc(länge_string_buffer);
+    strcpy(kopie_buffer_string, buffer);
 
+    länge_string_short = zerlege_string(kopie_buffer_string, kopie_kleiner_string, " ");
 
-    //Leerzeichen sind erlaubt, somit werden sie entfernt, damit die berechnung einfacher ist. 
-    token = strtok(buffer, " "); // Trennzeichen ist hier ein Leerzeichen
-
-    while (token != NULL) {
-        strcat(kopie_string_buffer, token); // fügt jedes Token an den neuen String an
-        token = strtok(NULL, " ");
-    }
-    länge_string_short = strlen((char*)kopie_string_buffer);
-    printf("buffer Kopie\t: %s\n\n", kopie_string_buffer);
-
-/*
-Prüft, ob das Zeichen '{' am Anfang des Strings vorhanden ist.
-Prüft, ob das Zeichen '}' am Ende des Strings vorhanden ist.
-Prüft, ob das Zeichen ',' im String vorhanden ist.
-Zählt die Anzahl der Vorkommen des Zeichens ',' im String und gibt eine Fehlermeldung aus, wenn es mehr als zweimal vorkommt.
-*/
-
-    ptr = strstr(kopie_string_buffer, "{");
-    if(ptr != &kopie_string_buffer[0]){
-        return -1;
+    /*
+    Prüft, ob das Zeichen '{' am Anfang des Strings vorhanden ist.
+    Prüft, ob das Zeichen '}' am Ende des Strings vorhanden ist.
+    Prüft, ob das Zeichen ',' im String vorhanden ist.
+    Zählt die Anzahl der Vorkommen des Zeichens ',' im String und gibt eine Fehlermeldung aus, wenn es mehr als zweimal vorkommt.
+    */
+    ptr = strstr(kopie_kleiner_string, "{");
+    if(ptr != &kopie_kleiner_string[0]){
+    return -1;
     }
 
     zähler = 0;
-    zähler = findstring("{", kopie_string_buffer);
+    zähler = zähle_string("{", kopie_kleiner_string);
     if(zähler > 1){
     return -1;
     }
-    
-
-    ptr = strstr(&kopie_string_buffer[länge_string_short]-1, "}");
+    ptr = strstr(&kopie_kleiner_string[länge_string_short]-1, "}");
     if(!ptr){
     return -1;
     }
-   
-
-    ptr = strstr(&kopie_string_buffer[0], ",");
+    ptr = strstr(&kopie_kleiner_string[0], ",");
     if(!ptr){
     return -1;
     }
-    
     zähler = 0;
-    zähler = findstring(",", ptr);
+    zähler = zähle_string(",", ptr);
     if(zähler != 2){
     return -1;
     }
     
 
-/*
-@brief Sucht in einem gegebenen String nach den Substrings "vz:", "za:" und "ne:" und speichert die Startadressen in den Variablen "start_adr_vz", "start_adr_za" und "start_adr_ne".
-@param kopie_string_buffer Der zu durchsuchende String.
-@param vz_vgl Der zu suchende Substring für das Vorzeichen.
-@param za_vgl Der zu suchende Substring für den Zähler.
-@param ne_vgl Der zu suchende Substring für den Nenner.
-@return int Gibt -1 zurück, wenn mindestens eines der Substrings nicht gefunden wurde, sonst 0.
-*/
+    /*
+    @brief Sucht in einem gegebenen String nach den Substrings "vz:", "za:" und "ne:" und speichert die Startadressen in den Variablen "start_adr_vz", "start_adr_za" und "start_adr_ne".
+    @param kopie_buffer_string Der zu durchsuchende String.
+    @param vz_vgl Der zu suchende Substring für das Vorzeichen.
+    @param za_vgl Der zu suchende Substring für den Zähler.
+    @param ne_vgl Der zu suchende Substring für den Nenner.
+    @return int Gibt -1 zurück, wenn mindestens eines der Substrings nicht gefunden wurde, sonst 0.
+    */
 
-    start_adr_vz = strstr(&kopie_string_buffer[0], vz_vgl);
-    start_adr_za = strstr(&kopie_string_buffer[0], za_vgl);
-    start_adr_ne = strstr(&kopie_string_buffer[0], ne_vgl);
-
-
+    start_adr_vz = strstr(&kopie_kleiner_string[0], vz_vgl);
+    start_adr_za = strstr(&kopie_kleiner_string[0], za_vgl);
+    start_adr_ne = strstr(&kopie_kleiner_string[0], ne_vgl);
     if(!start_adr_vz && !start_adr_za && !start_adr_ne){
-        printf(RED"Falsch :"RESET" \"vz\": und \"za\": und \"ne\": nicht vorhanden\n"RESET);
-        return -1;
-    }
-
-
-    zähler = 0;
-    zähler = findstring("\"vz\":", start_adr_vz);
-    if(zähler > 1){
-        printf(RED"Falsch :"RESET"\t \"vz\": %d mal vorhanden\n"RESET, zähler);
-        return -1;
+    return -1;
     }
 
     zähler = 0;
-    zähler = findstring("\"za\":", start_adr_za);
+    zähler = zähle_string("\"vz\":", start_adr_vz);
     if(zähler > 1){
-        printf(RED"Falsch :"RESET"\t \"za\": %d mal vorhanden\n"RESET, zähler);
-        return -1;
+    return -1;
     }
-
     zähler = 0;
-    zähler = findstring("\"ne\":", start_adr_ne);
+    zähler = zähle_string("\"za\":", start_adr_za);
     if(zähler > 1){
-        printf(RED"Falsch :"RESET"\t \"ne\": %d mal vorhanden\n"RESET, zähler);
+    return -1;
+    }
+    zähler = 0;
+    zähler = zähle_string("\"ne\":", start_adr_ne);
+    if(zähler > 1){
+    return -1;
+    }
+
+
+    ist_error = extrahiere_zahl_aus_string(start_adr_vz, von_json, vz_vgl);
+    if(ist_error != 0){
+        return -1;
+    }
+    ist_error = extrahiere_zahl_aus_string(start_adr_za, von_json, za_vgl);
+    if(ist_error != 0){
+        return -1;
+    }
+    ist_error = extrahiere_zahl_aus_string(start_adr_ne, von_json, ne_vgl);
+    if(ist_error != 0){
         return -1;
     }
 
-
-/*
-Nun wird mit der Start Adresse, die dazu gehörige Zahl ermittelt.
-*/
-start_adr_vz += strlen(vz_vgl);
-end_adr_vz = strtok(start_adr_vz, ",");
-if(end_adr_vz != NULL){
-    end_adr_vz = strtok(start_adr_vz, "}");
-    if(end_adr_ne == NULL){
-    return -1;
-    }
-}
-
-from_json->vz = atoi(end_adr_vz);
-if(from_json->vz != 1 && from_json->vz !=-1){
-return -1;
-}
-
-
-start_adr_za += strlen(za_vgl);
-end_adr_za = strtok(start_adr_za, ",");
-if(end_adr_za != NULL){
-    end_adr_za = strtok(start_adr_za, "}");
-    if(end_adr_za == NULL){
-    return -1;
-    }
-}
-
-from_json->za = atoi(end_adr_za);
-if(from_json->za >= 0 && from_json->za < 4294967295){
-return -1;
-}
-
-
-start_adr_ne += strlen(ne_vgl);
-end_adr_ne = strtok(start_adr_ne, ",");
-if(end_adr_ne != NULL){
-    end_adr_ne = strtok(start_adr_ne, "}");
-    if(end_adr_ne == NULL){
-    return -1;
-    }
-}
-
-from_json->ne = atoi(end_adr_ne);
-if(from_json->ne > 0 && from_json->ne < 4294967295){
-return -1;
-}
-
-
-
-//printf("Zahl vz = %d\n", a);
-
-free(kopie_string_buffer);
+    free(kopie_buffer_string);
+    free(kopie_kleiner_string);
 return 0;
 }
 
 
 
-/*
 
 
-int to_json(const rational_t *r, uint8_t *json, size_t json_size){
+
+
+
+short to_json(const rational *r, uint8_t *json, size_t json_size){
 
 
 return 0;
 }
-*/
+
 
 /*
  * @param sucher_string ist das Suchkriterium, um die Elemente im String_1 zu finden.
  * @param pointer_adressen zeigt auf die Anfangsadresse der Strings.
  * @return int zähler zählt die Summe der gefundenen Elemente im String_1.
  */
-int findstring(char *sucher_string, char *pointer_adresse){
+short zähle_string(char *sucher_string, char *pointer_adresse){
 
 
 int count = 0;
@@ -270,6 +254,73 @@ int count = 0;
     }
     return count;
 }
+
+
+
+
+
+
+
+short zerlege_string(char *buffer, char *kopie_buffer_string, const char *trennzeichen){
+
+short länge = 0;
+char* token = 0;
+
+    token = strtok(buffer, trennzeichen); // Trennzeichen ist hier ein Leerzeichen
+    while (token != NULL) {
+        strcat(kopie_buffer_string, token); // fügt jedes Token an den neuen String an
+        token = strtok(NULL, trennzeichen);
+    }
+    länge = strlen((char*)kopie_buffer_string);
+    printf("buffer Kopie\t: %s\n\n", kopie_buffer_string);
+
+return länge;
+}
+
+
+
+short extrahiere_zahl_aus_string(char* start_adr, rational *extrahiere_zahl, const char *vgl){
+char* end_adr = 0;
+
+start_adr += strlen(vgl);
+end_adr = strtok(start_adr, ",");
+if(end_adr != NULL){
+    end_adr = strtok(start_adr, "}");
+    if(end_adr == NULL){
+    return -1;
+    }
+}
+
+if(strcmp(vgl, "\"vz\":") == 0){
+extrahiere_zahl->vz = atoi(end_adr);
+    if(extrahiere_zahl->vz != 1 && extrahiere_zahl->vz !=-1){
+    return -1;
+    }
+}
+if(strcmp(vgl, "\"za\":") == 0){
+extrahiere_zahl->za = atoi(end_adr);
+    if(extrahiere_zahl->za != 1 && extrahiere_zahl->za !=-1){
+    return -1;
+    }
+}
+if(strcmp(vgl, "\"ne\":") == 0){
+extrahiere_zahl->ne = atoi(end_adr);
+    if(extrahiere_zahl->ne != 1 && extrahiere_zahl->ne !=-1){
+    return -1;
+    }
+}
+return 0;
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
