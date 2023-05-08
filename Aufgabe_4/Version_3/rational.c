@@ -86,7 +86,7 @@ int addition_rat(const rational *summand_1, const rational *summand_2, rational 
             summe->vz = summand_1->vz;
         }
         else{
-            summe->za == 0;
+            summe->za = 0;
         }
     }
 return 0;
@@ -136,11 +136,11 @@ else{
 
 
 
-void ausgabe_rat(const rational *zahl, char type, unsigned int zaehler){
-
-//printf("\nZahl = %u\n");
-
-
-}
+//void ausgabe_rat(const rational *zahl, char type, unsigned int zaehler){
+//
+////printf("\nZahl = %u\n");
+//
+//
+//}
 
 
