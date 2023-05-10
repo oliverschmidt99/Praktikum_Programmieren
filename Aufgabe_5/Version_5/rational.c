@@ -123,17 +123,17 @@ int ggt_teiler(rational *rat_zahl){
     unsigned int c      = 0;
 
 
-if(a == 0){
-teiler = b;
-}
-else{
-    while(b != 0){
-        c= a%b;
-        a=b;
-        b=c;
-    }
+	if(a == 0){
+	teiler = b;
+	}
+	else{
+ 	   while(b != 0){
+    		c = a%b;
+   	 	    a = b;
+    	    b = c;
+    		}
     teiler = a;
-}
+	}
         rat_zahl->za = rat_zahl->za/teiler;
         rat_zahl->ne = rat_zahl->ne/teiler;
         rat_zahl->vz = rat_zahl->vz;
